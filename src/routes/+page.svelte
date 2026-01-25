@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { loadImageAndLabels, loadPalette } from "$lib/supabase";
   import { initWebGL, renderScene } from "$lib/webgl";
+  import "@fontsource/dekko";
 
   let canvas;
   let selectedLabel = null;
@@ -54,7 +55,7 @@
   });
 </script>
 
-<div class="container">
+<div class="dotted-background font-dekko">
   <h1>Palette</h1>
 
   {#if loading}
@@ -66,24 +67,53 @@
   <canvas bind:this={canvas}></canvas>
 
   <div class="labels">
-    {#each Object.entries(labelColors) as [id, hexColor]}
-      <button
-        class:active={selectedLabel === Number(id)}
-        on:click={() => selectLabel(Number(id))}
-      >
-        <span style="background: {hexColor}"></span>
-        {hexColor}
-      </button>
-    {/each}
-    <button on:click={() => selectLabel(null)}>Clear</button>
+    <div class="flex justify-center mt-20">
+      <div class="grid grid-cols-4 md:grid-cols-7 gap-3">
+        {#each Object.entries(labelColors) as [id, hexColor]}
+          <button
+            class="color-square"
+            class:active={selectedLabel === id}
+            style="background: {hexColor}"
+            on:click={() => selectLabel(id)}
+            aria-label="Select color {hexColor}"
+          >
+            <div class="color-tooltip">
+              {hexColor}
+            </div>
+          </button>
+        {/each}
+      </div>
+    </div>
   </div>
 </div>
 
 <style>
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
+  @reference "tailwindcss";
+
+  .dotted-background {
+    font-family: "Dekko", cursive;
+    height: 100vh;
+    background-image: radial-gradient(circle, #777 1px, transparent 1px);
+    background-size: 15px 15px;
+  }
+
+  .color-square {
+    @apply relative w-21 h-21 cursor-pointer 
+    transition-all duration-200 hover:scale-110 hover:shadow-lg;
+  }
+
+  .color-square.active {
+    @apply border-4 border-black scale-105 shadow-xl;
+  }
+
+  .color-tooltip {
+    @apply absolute -top-10 left-1/2 -translate-x-1/2 
+      px-2 py-1 text-black text-sm opacity-0 pointer-events-none
+      transition-opacity duration-200 whitespace-nowrap;
+  }
+
+  .color-square:hover .color-tooltip {
+    @apply opacity-100;
   }
 
   h1 {
@@ -99,7 +129,8 @@
     display: block;
     max-width: 100%;
     margin: 1rem auto;
-    border: 2px solid #ddd;
+    /* border: 2px solid #ddd; */
+    background-color: #000;
   }
 
   .labels {
@@ -107,32 +138,5 @@
     gap: 0.5rem;
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  button {
-    padding: 0.5rem 1rem;
-    border: 2px solid #ddd;
-    background: white;
-    cursor: pointer;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  button:hover {
-    background: #f0f0f0;
-  }
-
-  button.active {
-    border-color: #2196f3;
-    background: #e3f2fd;
-  }
-
-  button span {
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    border: 1px solid #999;
   }
 </style>
