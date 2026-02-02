@@ -11,13 +11,17 @@
 
   let labelColors = {};
 
-  const PROPORTIONAL_PALETTE = true;
+  let proportionalPalette = true;
 
   const BUCKET = "labels";
   const IMAGE_PATH = "test.png";
   const LABELS_PATH = "test.bin";
 
   let glContext;
+
+  function toggleProprotionalPalette() {
+    proportionalPalette = !proportionalPalette;
+  }
 
   async function loadData() {
     try {
@@ -60,7 +64,9 @@
   });
 </script>
 
+<!-- TODO: add mobile support -->
 <div class="dotted-background font-dekko">
+  <!-- TODO: add dark theme -->
   <img class="top-right-image" alt="light" src="sun.svg" />
   <div class="layout">
     <h1>Palette</h1>
@@ -75,14 +81,16 @@
 
     <canvas style:display={loading ? "none" : ""} bind:this={canvas}></canvas>
 
-    <div class="labels">
-      <!-- <div class="grid grid-cols-4 md:grid-cols-7 gap-3"> -->
+    <div style:display={loading ? "none" : ""} class="labels">
+      <!-- TODO: beautiful button -->
+      <button on:click={toggleProprotionalPalette}>TODO</button>
       <div class="flex gap-1">
         {#each labelColors as { id, color, sortedIndex, size }}
+          <!-- TODO: add minimal size -->
           <button
             class="color-square"
             class:active={selectedLabel === id}
-            style="background: {color}; flex: {PROPORTIONAL_PALETTE
+            style="background: {color}; flex: {proportionalPalette
               ? size
               : 1 / labelColors.length}"
             on:click={() => selectLabel(id)}
@@ -95,6 +103,7 @@
   </div>
 </div>
 
+<!-- TODO: clean style -->
 <style>
   @reference "tailwindcss";
 
@@ -115,7 +124,6 @@
 
   .dotted-background {
     font-family: "Dekko", cursive;
-    /* height: 120vh; */
     background-image: radial-gradient(circle, #777 1px, transparent 1px);
     background-size: 15px 15px;
   }
@@ -167,11 +175,12 @@
 
   .hourglass {
     height: 90px;
-    animation: rotation 3s ease-in-out infinite;
+    animation: rotation 2s ease-in-out infinite;
   }
 
   .hourglass-container {
-    height: 100vh;
+    height: 80vh;
+    display: flex;
     justify-content: center;
     align-items: center;
   }
