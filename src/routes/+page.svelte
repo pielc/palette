@@ -11,7 +11,7 @@
 
   let labelColors = {};
 
-  let proportionalPalette = true;
+  let proportionalPalette = false;
 
   const BUCKET = "labels";
   const IMAGE_PATH = "test.png";
@@ -64,7 +64,8 @@
   });
 </script>
 
-<!-- TODO: add mobile support -->
+<!-- TODO: add mobile support : vertical palette for desktop ? -->
+<!-- TODO: add picture infos -->
 <div class="dotted-background font-dekko">
   <!-- TODO: add dark theme -->
   <img class="top-right-image" alt="light" src="sun.svg" />
@@ -73,37 +74,49 @@
 
     {#if loading}
       <div class="hourglass-container">
-        <img class="hourglass" src="hourglass.svg" alt="...coming" />
+        <img class="hourglass" src="hourglass-large.svg" alt="...coming" />
       </div>
     {:else if error}
       <p class="error">{error}</p>
     {/if}
 
-    <canvas style:display={loading ? "none" : ""} bind:this={canvas}></canvas>
+    <div class="content-container" style:display={loading ? "none" : ""}>
+      <canvas bind:this={canvas}></canvas>
 
-    <div style:display={loading ? "none" : ""} class="labels">
-      <!-- TODO: beautiful button -->
-      <button on:click={toggleProprotionalPalette}>TODO</button>
-      <div class="flex gap-1">
-        {#each labelColors as { id, color, sortedIndex, size }}
-          <!-- TODO: add minimal size -->
-          <button
-            class="color-square"
-            class:active={selectedLabel === id}
-            style="background: {color}; flex: {proportionalPalette
-              ? size
-              : 1 / labelColors.length}"
-            on:click={() => selectLabel(id)}
-          >
-            <div class="color-tooltip">{color}</div>
-          </button>
-        {/each}
+      <div class="labels">
+        <!-- TODO: beautiful button -->
+        <button on:click={toggleProprotionalPalette}
+          ><img
+            alt="selection-choice"
+            width="80px"
+            src={proportionalPalette
+              ? "equivalent-select.svg"
+              : "proportional-select.svg"}
+          />
+        </button>
+        <div class="colors-column">
+          {#each labelColors as { id, color, sortedIndex, size }}
+            <!-- TODO: add minimal size -->
+            <button
+              class="color-square"
+              class:active={selectedLabel === id}
+              style="background: {color}; flex: {proportionalPalette
+                ? size
+                : 1 / labelColors.length}"
+              on:click={() => selectLabel(id)}
+            >
+              <div class="color-tooltip">{color}</div>
+            </button>
+          {/each}
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- TODO: clean style -->
+<!-- TODO: better selection display : add svg arrow -->
+
 <style>
   @reference "tailwindcss";
 
@@ -114,6 +127,15 @@
     align-items: center; /* horizontal alignment */
     gap: 1rem; /* spacing between h1 / canvas / labels */
     padding: 1rem;
+  }
+
+  .content-container {
+    display: flex;
+    gap: 5rem;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1400px;
+    justify-content: center;
   }
 
   .top-right-image {
@@ -140,7 +162,7 @@
   }
 
   .color-tooltip {
-    @apply absolute -top-10 left-1/2 -translate-x-1/2 
+    @apply absolute -left-17 top-1/2 -translate-y-1/2 
       px-2 py-1 text-black text-lg opacity-0 pointer-events-none
       transition-opacity duration-200 whitespace-nowrap;
   }
@@ -167,10 +189,10 @@
 
   .labels {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 3em;
+    width: 80px;
+    height: fit-content;
   }
 
   .hourglass {
@@ -183,6 +205,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .colors-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    height: 600px; /* or match your canvas height */
   }
 
   @keyframes rotation {
