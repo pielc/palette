@@ -13,6 +13,7 @@
 
   let proportionalPalette = false;
 
+  const MINIMAL_PALETTE_RECTANGLE_SIZE = 0.05;
   const BUCKET = "labels";
   const IMAGE_PATH = "test.png";
   const LABELS_PATH = "test.bin";
@@ -64,7 +65,8 @@
   });
 </script>
 
-<!-- TODO: add mobile support : vertical palette for desktop ? -->
+<!-- TODO: add mobile support -->
+<!-- TODO: handle small width on desktop -->
 <!-- TODO: add picture infos -->
 <div class="dotted-background font-dekko">
   <!-- TODO: add dark theme -->
@@ -74,7 +76,7 @@
 
     {#if loading}
       <div class="hourglass-container">
-        <img class="hourglass" src="hourglass-large.svg" alt="...coming" />
+        <img class="hourglass" src="hourglass.svg" alt="...coming" />
       </div>
     {:else if error}
       <p class="error">{error}</p>
@@ -84,9 +86,8 @@
       <canvas bind:this={canvas}></canvas>
 
       <div class="labels">
-        <!-- TODO: beautiful button -->
-        <button on:click={toggleProprotionalPalette}
-          ><img
+        <button on:click={toggleProprotionalPalette}>
+          <img
             alt="selection-choice"
             width="80px"
             src={proportionalPalette
@@ -101,15 +102,29 @@
               class="color-square"
               class:active={selectedLabel === id}
               style="background: {color}; flex: {proportionalPalette
-                ? size
-                : 1 / labelColors.length}"
+                ? size > MINIMAL_PALETTE_RECTANGLE_SIZE
+                  ? size
+                  : MINIMAL_PALETTE_RECTANGLE_SIZE
+                : 1}"
               on:click={() => selectLabel(id)}
             >
-              <div class="color-tooltip">{color}</div>
+              <!-- TODO: add color name -->
+              <div class="color-tooltip">
+                {color}
+              </div>
+              {#if selectedLabel === id}
+                <img class="arrow-indicator" src="arrow.svg" alt="selected" />
+              {/if}
             </button>
           {/each}
         </div>
       </div>
+    </div>
+    <!-- TODO: beautify -->
+    <div>
+      <div>Cliff Walk at Pourville</div>
+      <div>1882</div>
+      <div>Claude Monet (French, 1840–1926)</div>
     </div>
   </div>
 </div>
@@ -124,8 +139,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center; /* horizontal alignment */
-    gap: 1rem; /* spacing between h1 / canvas / labels */
+    align-items: center;
+    gap: 1rem;
     padding: 1rem;
   }
 
@@ -151,14 +166,7 @@
   }
 
   .color-square {
-    @apply relative w-21 h-21 cursor-pointer 
-    /* transition-all duration-200 hover:scale-110 hover:shadow-lg; */
-    transition-all duration-200;
-  }
-
-  .color-square.active {
-    /* @apply border-3 border-gray-800 scale-105 shadow-xl; */
-    @apply border-3 border-gray-800 shadow-xl;
+    @apply relative w-21 h-21 cursor-pointer transition-all duration-200;
   }
 
   .color-tooltip {
@@ -169,6 +177,11 @@
 
   .color-square:hover .color-tooltip {
     @apply opacity-100;
+  }
+
+  .arrow-indicator {
+    @apply absolute -right-13 top-1/2 -translate-y-1/2;
+    height: 30px;
   }
 
   h1 {
@@ -211,7 +224,7 @@
     display: flex;
     flex-direction: column;
     gap: 1px;
-    height: 600px; /* or match your canvas height */
+    height: 600px;
   }
 
   @keyframes rotation {
