@@ -6,6 +6,7 @@
 
   let canvas;
   let selectedLabel = null;
+  let selectedColor = null;
   let loading = true;
   let error = null;
 
@@ -55,8 +56,9 @@
     renderScene(glContext, selectedLabel);
   }
 
-  function selectLabel(id) {
+  function selectLabel(id, color) {
     selectedLabel = selectedLabel === id ? null : id;
+    selectedColor = color;
     render();
   }
 
@@ -67,7 +69,6 @@
 
 <!-- TODO: add mobile support -->
 <!-- TODO: handle small width on desktop -->
-<!-- TODO: add picture infos -->
 <div class="dotted-background font-dekko">
   <!-- TODO: add dark theme -->
   <img class="top-right-image" alt="light" src="sun.svg" />
@@ -97,7 +98,6 @@
         </button>
         <div class="colors-column">
           {#each labelColors as { id, color, sortedIndex, size }}
-            <!-- TODO: add minimal size -->
             <button
               class="color-square"
               class:active={selectedLabel === id}
@@ -106,34 +106,56 @@
                   ? size
                   : MINIMAL_PALETTE_RECTANGLE_SIZE
                 : 1}"
-              on:click={() => selectLabel(id)}
+              on:click={() => selectLabel(id, color)}
             >
-              <!-- TODO: add color name -->
-              <div class="color-tooltip">
-                {color}
-              </div>
-              {#if selectedLabel === id}
-                <img class="arrow-indicator" src="arrow.svg" alt="selected" />
-              {/if}
+              <img
+                class="arrow-indicator"
+                class:selected={selectedLabel === id}
+                src="arrow.svg"
+                alt="selected"
+              />
+              <!-- TODO: fix selected frame ? -->
+              <!-- <img -->
+              <!--   class="selected-frame" -->
+              <!--   class:selected={selectedLabel === id} -->
+              <!--   src="selected-frame.svg" -->
+              <!--   alt="selected-frame" -->
+              <!-- /> -->
             </button>
           {/each}
         </div>
       </div>
     </div>
     <!-- TODO: beautify -->
-    <div>
-      <div>Cliff Walk at Pourville</div>
-      <div>1882</div>
-      <div>Claude Monet (French, 1840–1926)</div>
+    <div class="info-panel" style:display={loading ? "none" : ""}>
+      <!-- TODO: retrieve woth API  -->
+      <div class="flex-1">
+        <div>Cliff Walk at Pourville</div>
+        <div>1882</div>
+        <div>Claude Monet (French, 1840–1926)</div>
+      </div>
+      <!-- TODO: add color name and colored square-->
+      <div class="flex-1">{selectedColor}</div>
     </div>
   </div>
 </div>
 
 <!-- TODO: clean style -->
-<!-- TODO: better selection display : add svg arrow -->
 
 <style>
   @reference "tailwindcss";
+
+  .dotted-background {
+    font-family: "Dekko", cursive;
+    background-image: radial-gradient(circle, #777 1px, transparent 1px);
+    background-size: 15px 15px;
+  }
+
+  .top-right-image {
+    @apply absolute top-0 right-0;
+    width: 90px;
+    height: 90px;
+  }
 
   .layout {
     min-height: 100vh;
@@ -144,55 +166,19 @@
     padding: 1rem;
   }
 
-  .content-container {
-    display: flex;
-    gap: 5rem;
-    align-items: flex-start;
-    width: 100%;
-    max-width: 1400px;
-    justify-content: center;
-  }
-
-  .top-right-image {
-    @apply absolute top-0 right-0;
-    width: 90px;
-    height: 90px;
-  }
-
-  .dotted-background {
-    font-family: "Dekko", cursive;
-    background-image: radial-gradient(circle, #777 1px, transparent 1px);
-    background-size: 15px 15px;
-  }
-
-  .color-square {
-    @apply relative w-21 h-21 cursor-pointer transition-all duration-200;
-  }
-
-  .color-tooltip {
-    @apply absolute -left-17 top-1/2 -translate-y-1/2 
-      px-2 py-1 text-black text-lg opacity-0 pointer-events-none
-      transition-opacity duration-200 whitespace-nowrap;
-  }
-
-  .color-square:hover .color-tooltip {
-    @apply opacity-100;
-  }
-
-  .arrow-indicator {
-    @apply absolute -right-13 top-1/2 -translate-y-1/2;
-    height: 30px;
-  }
-
   h1 {
     font-size: 45px;
     color: #444;
     text-align: center;
   }
 
-  .error {
-    color: #c33;
-    text-align: center;
+  .content-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1400px;
+    justify-content: center;
   }
 
   canvas {
@@ -208,6 +194,46 @@
     height: fit-content;
   }
 
+  .colors-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    height: 600px;
+  }
+
+  .color-square {
+    @apply relative cursor-pointer transition-all duration-200;
+  }
+
+  .color-square:hover .arrow-indicator {
+    @apply opacity-100;
+  }
+
+  /* .color-tooltip { */
+  /*   @apply absolute -left-17 top-1/2 -translate-y-1/2  */
+  /*     px-2 py-1 text-black text-lg opacity-0 pointer-events-none */
+  /*     transition-opacity duration-200 whitespace-nowrap; */
+  /* } */
+
+  .arrow-indicator {
+    @apply absolute -right-13 top-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-200;
+    height: 30px;
+  }
+
+  .arrow-indicator.selected {
+    @apply opacity-100;
+  }
+
+  /* .selected-frame { */
+  /*   @apply relative opacity-0 transition-opacity duration-200; */
+  /* } */
+
+  .info-panel {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+  }
+
   .hourglass {
     height: 90px;
     animation: rotation 2s ease-in-out infinite;
@@ -220,11 +246,9 @@
     align-items: center;
   }
 
-  .colors-column {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    height: 600px;
+  .error {
+    color: #c33;
+    text-align: center;
   }
 
   @keyframes rotation {
