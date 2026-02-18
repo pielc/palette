@@ -191,12 +191,14 @@
     gap: 2rem;
     align-items: flex-start;
     width: 100%;
-    max-width: 1400px;
+    max-width: 900px;
     justify-content: center;
+    min-width: 0;
   }
 
   canvas {
-    max-width: 100%;
+    min-width: 0;
+    width: 100%;
     background-color: #000;
   }
 
@@ -205,14 +207,17 @@
     flex-direction: column;
     gap: 0.5rem;
     width: 80px;
+    flex-shrink: 0;
     height: fit-content;
+    margin-right: 2.5rem;
   }
 
   .colors-column {
     display: flex;
     flex-direction: column;
     gap: 1px;
-    height: 600px;
+    height: 500px;
+    max-height: 70vh;
   }
 
   .color-square {
@@ -223,12 +228,6 @@
     @apply opacity-100;
   }
 
-  /* .color-tooltip { */
-  /*   @apply absolute -left-17 top-1/2 -translate-y-1/2  */
-  /*     px-2 py-1 text-black text-lg opacity-0 pointer-events-none */
-  /*     transition-opacity duration-200 whitespace-nowrap; */
-  /* } */
-
   .arrow-indicator {
     @apply absolute -right-13 top-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-200;
     height: 30px;
@@ -238,26 +237,27 @@
     @apply opacity-100;
   }
 
-  /* .selected-frame { */
-  /*   @apply relative opacity-0 transition-opacity duration-200; */
-  /* } */
-
   .info-panel {
     display: flex;
     width: 100%;
     max-width: 900px;
+    min-width: 0;
+    gap: 1rem;
   }
 
   .art-info {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    min-width: 0;
   }
 
   .color-info {
     display: flex;
-    align-items: top;
+    align-items: flex-start;
     gap: 1rem;
+    min-width: 0;
+    flex-shrink: 1;
   }
 
   .color-swatch {
@@ -270,6 +270,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-all;
   }
 
   .color-name-placeholder {
