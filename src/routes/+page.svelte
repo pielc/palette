@@ -5,6 +5,7 @@
   import "@fontsource/dekko";
 
   let canvas;
+  let canvasHeight = 500;
   let selectedLabel = null;
   let selectedColor = null;
   let loading = true;
@@ -69,7 +70,6 @@
 </script>
 
 <!-- TODO: add mobile support -->
-<!-- TODO: handle small width on desktop -->
 <div class="dotted-background font-dekko">
   <!-- TODO: add dark theme -->
   <img class="top-right-image" alt="light" src="sun.svg" />
@@ -85,9 +85,9 @@
     {/if}
 
     <div class="content-container" style:display={loading ? "none" : ""}>
-      <canvas bind:this={canvas}></canvas>
+      <canvas bind:this={canvas} bind:clientHeight={canvasHeight}></canvas>
 
-      <div class="labels">
+      <div class="labels" style="height: {canvasHeight}px; max-height: 70vh;">
         <button on:click={toggleProprotionalPalette}>
           <img
             alt="selection-choice"
@@ -120,7 +120,6 @@
         </div>
       </div>
     </div>
-    <!-- TODO: beautify -->
     <div class="info-panel" style:display={loading ? "none" : ""}>
       <!-- TODO: retrieve with API  -->
       <div class="flex-1 art-info">
@@ -210,13 +209,15 @@
     flex-shrink: 0;
     height: fit-content;
     margin-right: 2.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
   .colors-column {
     display: flex;
     flex-direction: column;
     gap: 1px;
-    height: 500px;
+    height: 100%;
     max-height: 70vh;
   }
 
