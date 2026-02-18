@@ -58,10 +58,11 @@
 
   function selectLabel(id, color) {
     selectedLabel = selectedLabel === id ? null : id;
-    selectedColor = color;
+    selectedColor = selectedLabel !== null ? color : null;
     render();
   }
 
+  // TODO: handle no data
   onMount(() => {
     loadData();
   });
@@ -114,13 +115,6 @@
                 src="arrow.svg"
                 alt="selected"
               />
-              <!-- TODO: fix selected frame ? -->
-              <!-- <img -->
-              <!--   class="selected-frame" -->
-              <!--   class:selected={selectedLabel === id} -->
-              <!--   src="selected-frame.svg" -->
-              <!--   alt="selected-frame" -->
-              <!-- /> -->
             </button>
           {/each}
         </div>
@@ -128,16 +122,27 @@
     </div>
     <!-- TODO: beautify -->
     <div class="info-panel" style:display={loading ? "none" : ""}>
-      <!-- TODO: retrieve woth API  -->
-      <div class="flex-1">
-        <div>Cliff Walk at Pourville</div>
+      <!-- TODO: retrieve with API  -->
+      <div class="flex-1 art-info">
+        <div class="font-bold">Cliff Walk at Pourville</div>
         <div>1882</div>
         <div>Claude Monet (French, 1840–1926)</div>
       </div>
-      <!-- TODO: add color name and colored square-->
-      <div class="flex-1">{selectedColor}</div>
+      <div class="flex-1 color-info">
+        {#if selectedColor}
+          <div class="color-swatch" style="background: {selectedColor}"></div>
+          <div class="color-details">
+            <div>{selectedColor}</div>
+            <!-- TODO: retrieve with API -->
+            <div class="color-name-placeholder">Color name</div>
+          </div>
+        {:else}
+          <div></div>
+        {/if}
+      </div>
     </div>
   </div>
+  <div class="footer-caption">"I prefer living in color." - David Hockney</div>
 </div>
 
 <!-- TODO: clean style -->
@@ -151,8 +156,17 @@
     background-size: 15px 15px;
   }
 
+  .footer-caption {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    font-style: italic;
+    text-align: center;
+  }
   .top-right-image {
-    @apply absolute top-0 right-0;
+    position: absolute;
+    top: 0px;
+    right: 0px;
     width: 90px;
     height: 90px;
   }
@@ -232,6 +246,35 @@
     display: flex;
     width: 100%;
     max-width: 900px;
+  }
+
+  .art-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .color-info {
+    display: flex;
+    align-items: top;
+    gap: 1rem;
+  }
+
+  .color-swatch {
+    aspect-ratio: 1;
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+
+  .color-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .color-name-placeholder {
+    color: #999;
+    font-style: italic;
   }
 
   .hourglass {
