@@ -12,11 +12,13 @@
   let error = null;
 
   let labelColors = {};
+  let artInfo = {};
 
   let proportionalPalette = false;
 
   const MINIMAL_PALETTE_RECTANGLE_SIZE = 0.05;
   const BUCKET = "labels";
+  // TODO: remove hardcoded
   const IMAGE_PATH = "test.png";
   const LABELS_PATH = "test.bin";
 
@@ -34,7 +36,10 @@
         LABELS_PATH,
       );
 
-      labelColors = await loadPalette();
+      const palette = await loadPalette();
+
+      labelColors = palette.labelColors;
+      artInfo = palette.artInfo;
 
       console.log(labelColors);
       labelColors.sort((a, b) => a.sortedIndex < b.sortedIndex);
@@ -57,9 +62,9 @@
     renderScene(glContext, selectedLabel);
   }
 
-  function selectLabel(id, color) {
-    selectedLabel = selectedLabel === id ? null : id;
-    selectedColor = selectedLabel !== null ? color : null;
+  function selectLabel(labelColor) {
+    selectedLabel = selectedLabel === labelColor.id ? null : labelColor.id;
+    selectedColor = selectedLabel !== null ? labelColor : null;
     render();
   }
 
@@ -98,20 +103,20 @@
           />
         </button>
         <div class="colors-column">
-          {#each labelColors as { id, color, sortedIndex, size }}
+          {#each labelColors as labelColor}
             <button
               class="color-square"
-              class:active={selectedLabel === id}
-              style="background: {color}; flex: {proportionalPalette
-                ? size > MINIMAL_PALETTE_RECTANGLE_SIZE
-                  ? size
+              class:active={selectedLabel === labelColor.id}
+              style="background: {labelColor.color}; flex: {proportionalPalette
+                ? labelColor.size > MINIMAL_PALETTE_RECTANGLE_SIZE
+                  ? labelColor.size
                   : MINIMAL_PALETTE_RECTANGLE_SIZE
                 : 1}"
-              on:click={() => selectLabel(id, color)}
+              on:click={() => selectLabel(labelColor)}
             >
               <img
                 class="arrow-indicator"
-                class:selected={selectedLabel === id}
+                class:selected={selectedLabel === labelColor.id}
                 src="arrow.svg"
                 alt="selected"
               />
@@ -121,19 +126,20 @@
       </div>
     </div>
     <div class="info-panel" style:display={loading ? "none" : ""}>
-      <!-- TODO: retrieve with API  -->
       <div class="flex-1 art-info">
-        <div class="font-bold">Cliff Walk at Pourville</div>
-        <div>1882</div>
-        <div>Claude Monet (French, 1840–1926)</div>
+        <div class="font-bold">{artInfo.title}</div>
+        <div>{artInfo.date}</div>
+        <div>{artInfo.artist}</div>
       </div>
       <div class="flex-1 color-info">
         {#if selectedColor}
-          <div class="color-swatch" style="background: {selectedColor}"></div>
+          <div
+            class="color-swatch"
+            style="background: {selectedColor.color}"
+          ></div>
           <div class="color-details">
-            <div>{selectedColor}</div>
-            <!-- TODO: retrieve with API -->
-            <div class="color-name-placeholder">Color name</div>
+            <div class="color-hex-placeholder">{selectedColor.color}</div>
+            <div class="color-name-placeholder">{selectedColor.name}</div>
           </div>
         {:else}
           <div></div>
@@ -276,9 +282,16 @@
     word-break: break-all;
   }
 
+  .color-hex-placeholder {
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
   .color-name-placeholder {
-    color: #999;
-    font-style: italic;
+    color: #333;
+    font-size: 1.2rem;
+    /* font-style: italic; */
   }
 
   .hourglass {

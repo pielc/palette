@@ -18,14 +18,11 @@ export async function loadImageAndLabels(bucket, imagePath, labelsPath) {
     .from(bucket)
     .getPublicUrl(labelsPath);
 
-  console.log(imgUrl);
-  console.log(lblUrl);
   const img = await loadImage(imgUrl.publicUrl);
 
   const lblRes = await fetch(lblUrl.publicUrl);
   const lblBuf = await lblRes.arrayBuffer();
   const lblArray = new Uint8Array(lblBuf);
-  console.log(lblArray);
 
   const tmpCanvas = document.createElement("canvas");
   tmpCanvas.width = img.width;
@@ -66,7 +63,7 @@ export async function loadPalette() {
     .select()
     .eq("image_id", "test");
 
-  let res = paletteData.pop().palette;
-  console.log(res);
-  return res;
+  let res = paletteData.pop();
+
+  return { labelColors: res.palette, artInfo: res.art_info };
 }
