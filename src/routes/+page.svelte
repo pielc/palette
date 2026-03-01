@@ -1,6 +1,10 @@
 <script>
   import { onMount } from "svelte";
-  import { loadImageAndLabels, loadPalette } from "$lib/supabase";
+  import {
+    loadImageAndLabels,
+    loadPalette,
+    loadTestPalette,
+  } from "$lib/supabase";
   import { initWebGL, renderScene } from "$lib/webgl";
   import "@fontsource/dekko";
 
@@ -17,10 +21,6 @@
   let proportionalPalette = false;
 
   const MINIMAL_PALETTE_RECTANGLE_SIZE = 0.05;
-  const BUCKET = "labels";
-  // TODO: remove hardcoded
-  const IMAGE_PATH = "test.png";
-  const LABELS_PATH = "test.bin";
 
   let glContext;
 
@@ -30,13 +30,19 @@
 
   async function loadData() {
     try {
-      const { image, labels, width, height } = await loadImageAndLabels(
-        BUCKET,
-        IMAGE_PATH,
-        LABELS_PATH,
-      );
+      let palette = await loadPalette();
 
-      const palette = await loadPalette();
+      if (!palette) {
+        palette = await loadTestPalette();
+      }
+
+      if (!palette) {
+        throw new Error("Error fetching the palette");
+      }
+
+      const { image, labels, width, height } = await loadImageAndLabels(
+        palette.imageId,
+      );
 
       labelColors = palette.labelColors;
       artInfo = palette.artInfo;
@@ -196,9 +202,11 @@
     gap: 2rem;
     align-items: flex-start;
     width: 100%;
-    max-width: 900px;
-    justify-content: center;
     min-width: 0;
+    max-width: 1500px;
+    justify-content: center;
+    padding-left: 5vh;
+    padding-right: 5vh;
   }
 
   canvas {

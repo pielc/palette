@@ -4,19 +4,23 @@ import {
   PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 } from "$env/static/public";
 
+const BUCKET_NAME = "labels";
+
 const supabase = createClient(
   PUBLIC_SUPABASE_URL,
   PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 );
 
-export async function loadImageAndLabels(bucket, imagePath, labelsPath) {
+export async function loadImageAndLabels(imageId) {
   const { data: imgUrl } = await supabase.storage
-    .from(bucket)
-    .getPublicUrl(imagePath);
+    .from(BUCKET_NAME)
+    .getPublicUrl(`${imageId}${imageId == "test" ? ".png" : ".jpg"}`);
 
   const { data: lblUrl } = await supabase.storage
-    .from(bucket)
-    .getPublicUrl(labelsPath);
+    .from(BUCKET_NAME)
+    .getPublicUrl(`${imageId}.bin`);
+
+  console.log(imgUrl);
 
   const img = await loadImage(imgUrl.publicUrl);
 
@@ -57,7 +61,7 @@ function loadImage(url) {
   });
 }
 
-export async function loadPalette() {
+export async function loadTestPalette() {
   const { data: paletteData, error } = await supabase
     .from("ImageColors")
     .select()
@@ -65,5 +69,27 @@ export async function loadPalette() {
 
   let res = paletteData.pop();
 
-  return { labelColors: res.palette, artInfo: res.art_info };
+  return {
+    labelColors: res.palette,
+    artInfo: res.art_info,
+    imageId: res.imageId,
+  };
+}
+
+export async function loadPalette() {
+  const { data: paletteData, error } = await supabase
+    .from("ImageColors")
+    .select()
+    .eq("display_month", new Date().getMonth() + 1)
+    .eq("display_day", new Date().getDate());
+
+  let res = paletteData.pop();
+
+  return res
+    ? {
+        labelColors: res.palette,
+        artInfo: res.art_info,
+        imageId: res.image_id,
+      }
+    : null;
 }
