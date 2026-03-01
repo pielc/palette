@@ -74,7 +74,6 @@
     render();
   }
 
-  // TODO: handle no data
   onMount(() => {
     loadData();
   });
@@ -92,10 +91,16 @@
         <img class="hourglass" src="hourglass.svg" alt="...coming" />
       </div>
     {:else if error}
+      <p class="error">
+        Sorry, there was an error while trying to display the beautyful image..
+      </p>
       <p class="error">{error}</p>
     {/if}
 
-    <div class="content-container" style:display={loading ? "none" : ""}>
+    <div
+      class="content-container"
+      style:display={loading || error ? "none" : ""}
+    >
       <canvas bind:this={canvas} bind:clientHeight={canvasHeight}></canvas>
 
       <div class="labels" style="height: {canvasHeight}px; max-height: 70vh;">
@@ -315,7 +320,7 @@
   }
 
   .error {
-    color: #c33;
+    font-style: italic;
     text-align: center;
   }
 
