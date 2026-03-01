@@ -1,38 +1,7 @@
-# sv
+# Palette
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+I made this project to explore paintings' main colors.
 
-## Creating a project
+Sub project [palette-back](https://github.com/pielc/palette-back) gets paintings from [Art Institute of Chicago API](https://api.artic.edu/docs/#introduction) then analyse pixel colors with a kmeans algorythm to extract main colors.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+This project get those results and show one painting per day.
