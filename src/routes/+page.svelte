@@ -208,7 +208,7 @@
     align-items: flex-start;
     width: 100%;
     min-width: 0;
-    max-width: 1500px;
+    max-width: 1100px;
     justify-content: center;
     padding-left: 5vh;
     padding-right: 5vh;
