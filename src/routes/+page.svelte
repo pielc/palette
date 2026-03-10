@@ -15,6 +15,8 @@
   let loading = true;
   let error = null;
 
+  let innerWidth = 1000;
+
   let labelColors = {};
   let artInfo = {};
 
@@ -79,6 +81,8 @@
   });
 </script>
 
+<svelte:window bind:innerWidth />
+
 <!-- TODO: add mobile support -->
 <div class="dotted-background font-dekko">
   <!-- TODO: add dark theme -->
@@ -86,7 +90,15 @@
   <div class="layout">
     <h1>Palette</h1>
 
-    {#if loading}
+    <!-- TODO: use a more clever width handling -->
+    {#if innerWidth < 1000}
+      <div class="unsupported-resolution">
+        <p>Sorry, I don't support this resolution.</p>
+        <p>You can view the beautiful daily palette on a computer.</p>
+      </div>
+    {/if}
+
+    {#if loading && innerWidth >= 1000}
       <div class="hourglass-container">
         <img class="hourglass" src="hourglass.svg" alt="...coming" />
       </div>
@@ -99,11 +111,11 @@
 
     <div
       class="content-container"
-      style:display={loading || error ? "none" : ""}
+      style:display={loading || error || innerWidth < 1000 ? "none" : ""}
     >
       <canvas bind:this={canvas} bind:clientHeight={canvasHeight}></canvas>
 
-      <div class="labels" style="height: {canvasHeight}px; max-height: 70vh;">
+      <div class="labels" style="height: {canvasHeight}px;">
         <button on:click={toggleProprotionalPalette}>
           <img
             alt="selection-choice"
@@ -136,7 +148,10 @@
         </div>
       </div>
     </div>
-    <div class="info-panel" style:display={loading ? "none" : ""}>
+    <div
+      class="info-panel"
+      style:display={loading || error || innerWidth < 1000 ? "none" : ""}
+    >
       <div class="flex-1 art-info">
         <div class="font-bold">{artInfo.title}</div>
         <div>{artInfo.date}</div>
@@ -170,14 +185,15 @@
     font-family: "Dekko", cursive;
     background-image: radial-gradient(circle, #777 1px, transparent 1px);
     background-size: 15px 15px;
+    min-height: 100vh;
   }
 
   .footer-caption {
-    position: absolute;
-    bottom: 0px;
     width: 100%;
     font-style: italic;
     text-align: center;
+    z-index: -1;
+    margin-top: auto;
   }
   .top-right-image {
     position: absolute;
@@ -188,7 +204,7 @@
   }
 
   .layout {
-    min-height: 100vh;
+    min-height: 97vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -226,7 +242,6 @@
     gap: 0.5rem;
     width: 80px;
     flex-shrink: 0;
-    height: fit-content;
     margin-right: 2.5rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -237,7 +252,6 @@
     flex-direction: column;
     gap: 1px;
     height: 100%;
-    max-height: 70vh;
   }
 
   .color-square {
@@ -313,10 +327,19 @@
   }
 
   .hourglass-container {
-    height: 80vh;
+    height: 70vh;
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .unsupported-resolution {
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    font-style: italic;
   }
 
   .error {
